@@ -5,6 +5,9 @@ from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 import re
 
+import os
+import sys
+
 URL='https://www.ncei.noaa.gov/data/local-climatological-data/access/2021/'
 
 def web_scraping():
@@ -41,11 +44,26 @@ def download_file(file_link):
         with open(file_name, 'wb') as file:
             file.write(file_response.content)
         print(f"File '{file_name}' downloaded successfully.")
+        full_path=os.path.abspath(file_name)
+        print(f"Full path to the downloaded file: {full_path}")
+        extract_data_from_file(file_name)
     else:
         print(f"Failed to download the file. Status code: {file_response.status_code}")
 
+def extract_data_from_file(file_name):
+    print(f"Extracting data from the file: {file_name}")
+    data = pandas.read_csv(file_name)
+
+    
+    max_temp = data['HourlyDryBulbTemperature'].max()
+    print("Data extracted successfully.")
+    print(max_temp)
+
+    #print the max temperature to the console (stdout)
+    sys.stdout.write('The highest HourlyDryBulbTemperature: ' + str(max_temp) + '\n')
 def main():
     web_scraping()
+    
      
 
 
