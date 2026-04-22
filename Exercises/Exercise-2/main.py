@@ -1,6 +1,8 @@
 import requests
 import pandas
+
 from bs4 import BeautifulSoup
+from urllib.parse import urljoin
 import re
 
 URL='https://www.ncei.noaa.gov/data/local-climatological-data/access/2021/'
@@ -26,6 +28,21 @@ def web_scraping():
                 print(f"Found the file link: {previous_link['href']}")
     else:
         print("Target item not found in the web page.")
+
+    download_file(file_link)
+
+def download_file(file_link):
+    file_name=file_link['href']
+    file_url=urljoin(URL, file_name)
+    print(f"Downloading the file from: {file_url}")
+    file_response=requests.get(file_url)
+
+    if file_response.status_code == 200:
+        with open(file_name, 'wb') as file:
+            file.write(file_response.content)
+        print(f"File '{file_name}' downloaded successfully.")
+    else:
+        print(f"Failed to download the file. Status code: {file_response.status_code}")
 
 def main():
     web_scraping()
